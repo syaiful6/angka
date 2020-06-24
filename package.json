@@ -1,0 +1,22 @@
+{
+    "name": "ddouble",
+    "version": "0.0.1",
+    "description": "Numeric",
+    "license": "BSD",
+    "esy": {
+        "build": "dune build -p ddouble"
+    },
+    "scripts": {
+    },
+    "dependencies": {
+        "@opam/dune": ">=1.6.0",
+        "@opam/zarith": "~1.9.1"
+    },
+    "resolutions": {
+        "@opam/dune": "2.5.0"
+    },
+    "devDependencies": {
+        "ocaml": "~4.10",
+        "@opam/merlin": "3.3.6"
+    }
+}

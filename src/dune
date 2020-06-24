@@ -1,0 +1,5 @@
+(library
+    (name ddouble)
+    (public_name ddouble)
+    (libraries zarith)
+)

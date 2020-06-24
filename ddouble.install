@@ -1,0 +1,18 @@
+lib: [
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/META"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.a"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.cma"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.cmi"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.cmt"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.cmti"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.cmx"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.cmxa"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.cmxs"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.ml"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/ddouble.mli"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/dune-package"
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/lib/ddouble/opam"
+]
+doc: [
+  "/home/syaiful/code/prj/ocaml/ddouble/_esy/default/store/b/angka-41468547/install/default/doc/ddouble/README"
+]
