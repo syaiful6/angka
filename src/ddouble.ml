@@ -25,17 +25,18 @@ module Edouble = struct
   let two28      = 2.68435456e8
 
   let split x =
-    if x > splitbound || x < Float.neg splitbound then
+    if x > splitbound || x < Float.neg splitbound then begin
       let y = x *. 3.725290298461914e-9 in
       let t = y *. splitter in
       let hi = t -. (t -. y) in
       let lo = y -. hi in
       (hi *. two28, lo *. two28)
-    else
+    end else begin
       let t = x *. splitter in
       let hi = t -. (t -. x) in
       let lo = x -. hi in
       (hi, lo)
+    end
   
   let prod x y =
     let z = x *. y in
@@ -74,10 +75,11 @@ let neg dd =
 
 let quicksum x y =
   if not (Float.is_finite x) then of_float x
-  else
+  else begin
     let z = x +. y in
     let err = y -. (z -. x) in
     create z (if Float.is_finite z then err else z)
+  end
 
 let is_finite x = Float.is_finite x.hi && Float.is_finite x.lo
 
@@ -104,21 +106,23 @@ let sqr x =
 let div x y =
   let q1 = of_float (x.hi /. y.hi) in
   if (not (is_finite q1) || not (Float.is_finite y.hi)) then q1
-  else
+  else begin
     let r1 = sub x (mul y q1) in
     let q2 = of_float (r1.hi /. y.hi) in
     let r2 = sub r1 (mul y q2) in
     let q3 = of_float (r2.hi /. y.hi) in
     let q = quicksum q1.hi q2.hi in
     add q q3
+  end
 
 let is_zero x = x.hi = 0.0
 
 let rec npwr_acc x acc n =
   if n <= 0 then acc
-  else
+  else begin
     if Int.logand n 1 <> 1 then npwr_acc (sqr x) acc (n / 2)
     else npwr_acc x (mul x acc) (n - 1)
+  end
 
 let npwr x n =
   if Int.equal n 0 then
