@@ -35,3 +35,14 @@ val div : t -> t -> t
 (** Division *)
 
 val decode : t -> float * float
+
+val to_float : t -> float
+(** Convert ddouble to float, losing the precision *)
+
+val round : t -> t
+(** Round a ddouble *)
+
+val floor : t -> t
+(** Round a ddouble *)
+
+val ceil : t -> t

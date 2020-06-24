@@ -1,0 +1,4 @@
+(tests
+    (names test_ddouble)
+    (package ddouble)
+    (libraries ounit2 ddouble))

@@ -1,0 +1,11 @@
+{
+  "source": "./package.json",
+  "scripts": {
+    "run": "esy '@test' dune runtest"
+  },
+  "override": {
+    "dependencies": {
+      "@opam/ounit2": "^2.2"
+    }
+  }
+}
