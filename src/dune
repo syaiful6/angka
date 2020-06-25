@@ -1,5 +1,4 @@
 (library
-    (name ddouble)
-    (public_name ddouble)
-    (libraries zarith)
-)
+    (name angka)
+    (public_name angka)
+    (libraries zarith))

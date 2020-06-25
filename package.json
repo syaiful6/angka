@@ -1,10 +1,10 @@
 {
-    "name": "ddouble",
+    "name": "angka",
     "version": "0.0.1",
     "description": "Numeric",
     "license": "BSD",
     "esy": {
-        "build": "dune build -p ddouble"
+        "build": "dune build -p angka"
     },
     "scripts": {
     },
