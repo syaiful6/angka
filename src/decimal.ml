@@ -29,7 +29,9 @@ module Zutils = struct
     end
 
   let is_exp10 x = is_exp10_rec x 0
-   
+  
+  let count_digits x =
+    Z.to_string x |> String.length
 end
 
 module Iutils = struct
@@ -61,6 +63,8 @@ let create num exp =
 
 let zero = create (Z.of_int 0) 0
 
+let is_zero x = Z.equal x.num Z.zero
+
 let round_exp exp =
   if exp = 0 then exp else 7 * (exp / 7)
 
@@ -86,6 +90,27 @@ let add x y =
   let yy = expand y e in
   of_zarith (Z.add xx.num yy.num) e
 
+let neg x = create (Z.neg x.num) x.exp
+
+let sub x y = add x (neg y)
+
+let mul x y =
+  let z = of_zarith (Z.mul x.num y.num) (x.exp + y.exp) in
+  if z.exp < 0 then reduce z else z
+
+let div_with x y ?min_prec:(min_prec=15) () =
+  if is_zero x || is_zero y then zero else begin
+    let exp = x.exp - y.exp in
+    let xdigits = Zutils.count_digits x.num in
+    let ydigits = Zutils.count_digits y.num in
+    let extra = max 0 (ydigits - xdigits) + min_prec in
+
+    if extra > 0 then reduce (of_zarith (Z.div (Zutils.mul_exp10 x.num extra) y.num) (exp - extra))
+    else reduce (of_zarith (Z.div x.num y.num) (exp - extra))
+  end
+
+let div x y = div_with x y ()
+
 type round =
     HalfEven
   | HalfCeil
@@ -97,7 +122,7 @@ type round =
   | Truncate
   | AwayFromZero
 
-let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) =
+let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
   if x.exp >= Int.neg prec then x
   else begin
     let cx = reduce x in
@@ -127,4 +152,20 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) =
 
       of_zarith q1 (Int.neg prec)
     end
+  end
+
+let get_exponent d = Zutils.count_digits d.num + d.exp - 1
+
+let of_string_fixed d ?prec:(prec=(-1000)) () =
+  let x = round_to_prec d ~prec:(Int.abs prec) () in
+  if x.exp >= 0 then begin
+    let frac = if prec <= 0 then "" else "." ^ String.make prec '0' in
+    Z.to_string x.num ^ String.make x.exp '0' ^ frac
+  end else begin
+    let digits = Int.neg x.exp in
+    let sign = if Z.sign x.num < 0 then "-" else "" in
+    let i = Z.abs x.num in
+    let man = Zutils.cdiv_exp10 i digits in
+    (* let frac = Z.sub i (Zutils.mul_exp10 man digits) in *)
+    sign ^ Z.to_string man
   end
