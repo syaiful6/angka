@@ -13,6 +13,9 @@ val two : t
 val ten : t
 (** The ddouble 10 *)
 
+val nan : t
+(** The Not a Number of ddouble *)
+
 val of_float : float -> t
 (** Convert the given floating point number to ddouble *)
 
@@ -46,3 +49,4 @@ val floor : t -> t
 (** Round a ddouble *)
 
 val ceil : t -> t
+(** Ceil a ddouble *)

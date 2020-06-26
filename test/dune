@@ -1,4 +1,4 @@
 (tests
     (names test_ddouble test_decimal)
     (package angka)
-    (libraries ounit2 angka))
+    (libraries ounit2 angka zarith))

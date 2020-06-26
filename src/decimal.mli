@@ -9,6 +9,8 @@ val is_zero : t -> bool
 val of_zarith : Z.t -> int -> t
 (** Create a decimal with the given integer and exponent *)
 
+val of_int : int -> int -> t
+
 val neg : t -> t
 
 val add : t -> t -> t
@@ -33,3 +35,7 @@ type round =
   | AwayFromZero
 
 val round_to_prec : t -> ?prec:int -> ?round:round -> unit -> t
+
+val get_exponent : t -> int
+
+val of_string_fixed : t -> ?prec:int -> unit -> string

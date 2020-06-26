@@ -49,6 +49,40 @@ module Iutils = struct
   let mul_exp10 i n = i * (pow 10 n)
 
   let exp10 = mul_exp10 1
+
+  let int_div x y =
+    if y = 0 then 0 else begin
+      let q = truncate ((Int.to_float x) /. (Int.to_float y)) in
+      let r = Int.rem x y in
+      if r < 0 then
+        if y > 0 then q - 1 else q + 1
+      else q
+    end
+end
+
+module StrUtils = struct
+  let repeat s n =
+    if n <= 0 then ""
+    else if n = 1 then s
+    else if n = 2 then s ^ s
+    else begin
+      let rec loop i r s =
+        if i <= 0 then r else begin
+          let x = i land 1 in
+          if x > 0 then loop (i asr 1) (r ^ s) (s ^ s)
+          else loop (i asr 1) r (s ^ s)
+        end
+      in
+      loop n "" s
+    end
+  
+  let pad_left s w ?fill:(fill=" ") () =
+    let n = String.length s in
+    if w <= n then s else repeat fill (w - n) ^ s
+
+  let pad_right s w ?fill:(fill=" ") () =
+    let n = String.length s in
+    if w <= n then s else s ^ repeat fill (w - n)
 end
 
 type t =
@@ -66,12 +100,14 @@ let zero = create (Z.of_int 0) 0
 let is_zero x = Z.equal x.num Z.zero
 
 let round_exp exp =
-  if exp = 0 then exp else 7 * (exp / 7)
+  if exp = 0 then exp else 7 * (Iutils.int_div exp 7)
 
 let of_zarith i exp =
   let x = round_exp exp in
   let diff = exp - x in
   if diff = 0 then create i exp else create (Zutils.mul_exp10 i diff) x
+
+let of_int i = of_zarith (Z.of_int i)
 
 let reduce x =
   let p = Zutils.is_exp10 x.num in
@@ -156,6 +192,11 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
 
 let get_exponent d = Zutils.count_digits d.num + d.exp - 1
 
+let show_frac frac prec =
+  let trimmed = Str.global_replace (Str.regexp "0+$") "" frac in
+  let fractFul = if prec >= 0 then StrUtils.pad_right trimmed prec ~fill:"0" () else trimmed in
+  if fractFul = "" then "" else "." ^ fractFul
+
 let of_string_fixed d ?prec:(prec=(-1000)) () =
   let x = round_to_prec d ~prec:(Int.abs prec) () in
   if x.exp >= 0 then begin
@@ -166,6 +207,6 @@ let of_string_fixed d ?prec:(prec=(-1000)) () =
     let sign = if Z.sign x.num < 0 then "-" else "" in
     let i = Z.abs x.num in
     let man = Zutils.cdiv_exp10 i digits in
-    (* let frac = Z.sub i (Zutils.mul_exp10 man digits) in *)
-    sign ^ Z.to_string man
+    let frac = Z.sub i (Zutils.mul_exp10 man digits) in
+    sign ^ Z.to_string man ^ show_frac (StrUtils.pad_left (Z.to_string frac) digits ~fill:"0" ()) prec
   end

@@ -1,4 +1,4 @@
 (library
     (name angka)
     (public_name angka)
-    (libraries zarith))
+    (libraries zarith str))

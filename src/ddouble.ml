@@ -20,36 +20,12 @@ module Edouble = struct
     let err = if Float.is_finite z then y -. (z -. x) else z in
     create z err
 
-  let splitbound = 6.696928794914171e299
-  let splitter   = 1.34217729e8
-  let two28      = 2.68435456e8
-
-  let split x =
-    if x > splitbound || x < Float.neg splitbound then begin
-      let y = x *. 3.725290298461914e-9 in
-      let t = y *. splitter in
-      let hi = t -. (t -. y) in
-      let lo = y -. hi in
-      (hi *. two28, lo *. two28)
-    end else begin
-      let t = x *. splitter in
-      let hi = t -. (t -. x) in
-      let lo = x -. hi in
-      (hi, lo)
-    end
-  
   let prod x y =
     let z = x *. y in
-    let (xhi, xlo) = split x in
-    let (yhi, ylo) = split y in
-    let err = ((xhi*.yhi -. z) +. (xhi*.ylo +. xlo*.ylo)) +. (xlo *.ylo) in
-    create z (if Float.is_finite z then err else z)
+    let err = Float.fma x y (Float.neg z) in
+    create z err
 
-  let prodsqr x =
-    let z = x*.x in
-    let (hi, lo) = split x in
-    let err = ((hi*.hi -. z) +. (2.0*.hi*.lo)) +. (lo*.lo) in
-    create x (if Float.is_finite z then err else z)
+  let prodsqr x = prod x x
 end
 
 type t =
