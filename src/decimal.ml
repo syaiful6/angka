@@ -99,6 +99,8 @@ let zero = create (Z.of_int 0) 0
 
 let is_zero x = Z.equal x.num Z.zero
 
+let sign x = Z.sign x.num
+
 let round_exp exp =
   if exp = 0 then exp else 7 * (Iutils.int_div exp 7)
 
@@ -146,6 +148,29 @@ let div_with x y ?min_prec:(min_prec=15) () =
   end
 
 let div x y = div_with x y ()
+
+let succ x = create (Z.succ x.num) x.exp
+
+let pred x = create (Z.pred x.num) x.exp
+
+let compare x y =
+  let e = min x.exp y.exp in
+  let xx = expand x e in
+  let yy = expand y e in
+  Z.compare xx.num yy.num
+
+let equal a b = compare a b = 0
+
+let leq a b = compare a b <= 0
+let geq a b = compare a b >= 0
+let lt a b = compare a b < 0
+let gt a b = compare a b > 0
+
+let min a b = if compare a b <= 0 then a else b
+
+let max a b = if compare a b >= 0 then a else b
+
+let abs a = if sign a = -1 then neg a else a
 
 type round =
     HalfEven
@@ -197,7 +222,7 @@ let show_frac frac prec =
   let fractFul = if prec >= 0 then StrUtils.pad_right trimmed prec ~fill:"0" () else trimmed in
   if fractFul = "" then "" else "." ^ fractFul
 
-let of_string_fixed d ?prec:(prec=(-1000)) () =
+let to_string_fixed d ?prec:(prec=(-1000)) () =
   let x = round_to_prec d ~prec:(Int.abs prec) () in
   if x.exp >= 0 then begin
     let frac = if prec <= 0 then "" else "." ^ String.make prec '0' in
@@ -210,3 +235,19 @@ let of_string_fixed d ?prec:(prec=(-1000)) () =
     let frac = Z.sub i (Zutils.mul_exp10 man digits) in
     sign ^ Z.to_string man ^ show_frac (StrUtils.pad_left (Z.to_string frac) digits ~fill:"0" ()) prec
   end
+
+let to_string_exponent d ?prec:(prec=(-1000)) () =
+  let x = round_to_prec d ~prec:((Int.abs prec) - get_exponent d) () in
+  let s = Z.abs x.num |> Z.to_string in
+  let digits = String.length s in
+  let exp = x.exp + digits - 1 in
+  let sign = if sign x = -1 then "-" else "" in
+  let exponent = if exp = 0 then "" else "e" ^ (if exp > 0 then "+" else "") ^ Int.to_string exp in
+  sign ^ String.sub s 0 1 ^ show_frac (String.sub s 1 (digits - 1)) prec ^ exponent
+  
+let to_string d ?prec:(prec=(-1000)) () =
+  let exp = get_exponent d in
+  let is_prec_negative = Int.compare prec 0 = -1 in
+  if exp > -5 && exp < (if is_prec_negative then 15 else prec)
+    then to_string_fixed d ~prec:prec ()
+    else to_string_exponent d ~prec:prec ()
