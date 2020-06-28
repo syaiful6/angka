@@ -1,89 +1,6 @@
-module Zutils = struct
-  let ten = Z.of_int 10
-
-  let mul_exp10 i n =
-    Z.mul i (Z.pow ten n)
-
-  let is_zero x = Z.equal x Z.zero
-
-  let cdiv_exp10 i n =
-    Z.div i (Z.pow ten n)
-
-  let cdiv_mod_exp10 i n =
-    if n <= 0 then (i, 0) else begin
-      let cq = cdiv_exp10 i n in
-      let cr = Z.sub i (mul_exp10 cq n) in
-      (cq, Z.to_int cr)
-    end
-
-  let div_mod_exp10 i n =
-    let (cq, cr) = cdiv_mod_exp10 i n in
-    if cr > 0 then (cq, cr) else (Z.pred cq, cr - 1)
-
-  let rec is_exp10_rec a j =
-    if is_zero a then j
-    else begin
-      let (quotien, remainder) = Z.div_rem a ten in
-      if is_zero remainder then is_exp10_rec quotien (j + 1)
-      else j
-    end
-
-  let is_exp10 x = is_exp10_rec x 0
-  
-  let count_digits x =
-    Z.to_string x |> String.length
-end
-
-module Iutils = struct
-  let is_even n =  n mod 2 = 0
-
-  let pow base exponent =
-    if exponent < 0 then invalid_arg "exponent can not be negative" else
-    let rec aux accumulator base = function
-      | 0 -> accumulator
-      | 1 -> base * accumulator
-      | e when is_even e -> aux accumulator (base * base) (e / 2)
-      | e -> aux (base * accumulator) (base * base) ((e - 1) / 2) in
-    aux 1 base exponent
-
-  let mul_exp10 i n = i * (pow 10 n)
-
-  let exp10 = mul_exp10 1
-
-  let int_div x y =
-    if y = 0 then 0 else begin
-      let q = truncate ((Int.to_float x) /. (Int.to_float y)) in
-      let r = Int.rem x y in
-      if r < 0 then
-        if y > 0 then q - 1 else q + 1
-      else q
-    end
-end
-
-module StrUtils = struct
-  let repeat s n =
-    if n <= 0 then ""
-    else if n = 1 then s
-    else if n = 2 then s ^ s
-    else begin
-      let rec loop i r s =
-        if i <= 0 then r else begin
-          let x = i land 1 in
-          if x > 0 then loop (i asr 1) (r ^ s) (s ^ s)
-          else loop (i asr 1) r (s ^ s)
-        end
-      in
-      loop n "" s
-    end
-  
-  let pad_left s w ?fill:(fill=" ") () =
-    let n = String.length s in
-    if w <= n then s else repeat fill (w - n) ^ s
-
-  let pad_right s w ?fill:(fill=" ") () =
-    let n = String.length s in
-    if w <= n then s else s ^ repeat fill (w - n)
-end
+module Iutils = Utils.Int
+module Zutils = Utils.Z
+module Strutils = Utils.Str
 
 type t =
   { num : Z.t
@@ -153,6 +70,11 @@ let succ x = create (Z.succ x.num) x.exp
 
 let pred x = create (Z.pred x.num) x.exp
 
+let pow x n =
+  let m = Int.abs n in
+  let y = of_zarith (Z.pow x.num m) (x.exp * m) in
+  if n < 0 then div_with (of_int 1 0) y ~min_prec:(3 + m) () else y
+
 let compare x y =
   let e = min x.exp y.exp in
   let xx = expand x e in
@@ -192,14 +114,14 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
       let (q, r) = Zutils.div_mod_exp10 cx.num p in
 
       let round_half keep =
-        let half = Iutils.exp10 p / 2 in
+        let half = Z.of_int (Iutils.exp10 p / 2) in
         if r = half then
           if keep then q else Z.succ q
         else if r > half then Z.succ q
         else q
       in
 
-      let q1 = if r = 0 then q else match round with
+      let q1 = if r = Z.of_int 0 then q else match round with
           HalfEven  -> round_half (Z.is_even q)
         | HalfFloor -> round_half true
         | HalfCeil  -> round_half false
@@ -219,7 +141,7 @@ let get_exponent d = Zutils.count_digits d.num + d.exp - 1
 
 let show_frac frac prec =
   let trimmed = Str.global_replace (Str.regexp "0+$") "" frac in
-  let fractFul = if prec >= 0 then StrUtils.pad_right trimmed prec ~fill:"0" () else trimmed in
+  let fractFul = if prec >= 0 then Strutils.pad_right trimmed prec ~fill:"0" () else trimmed in
   if fractFul = "" then "" else "." ^ fractFul
 
 let to_string_fixed d ?prec:(prec=(-1000)) () =
@@ -233,7 +155,7 @@ let to_string_fixed d ?prec:(prec=(-1000)) () =
     let i = Z.abs x.num in
     let man = Zutils.cdiv_exp10 i digits in
     let frac = Z.sub i (Zutils.mul_exp10 man digits) in
-    sign ^ Z.to_string man ^ show_frac (StrUtils.pad_left (Z.to_string frac) digits ~fill:"0" ()) prec
+    sign ^ Z.to_string man ^ show_frac (Strutils.pad_left (Z.to_string frac) digits ~fill:"0" ()) prec
   end
 
 let to_string_exponent d ?prec:(prec=(-1000)) () =
@@ -251,3 +173,14 @@ let to_string d ?prec:(prec=(-1000)) () =
   if exp > -5 && exp < (if is_prec_negative then 15 else prec)
     then to_string_fixed d ~prec:prec ()
     else to_string_exponent d ~prec:prec ()
+
+let decode_float x =
+  let (man, exp) = Float.frexp x in
+  (Float.to_int (man /. 1.1102230246251565e-16), exp - 53)
+
+let of_float f ?prec:(prec=(-1)) () =
+  let (man,exp) = decode_float f in
+  if (exp >= 0) then of_int (man * (Utils.Int.pow 2 exp)) 0 else begin
+    let prec = if prec < 0 then Int.neg exp else Stdlib.min prec (Int.neg exp) in
+    div_with (of_int man 0) (pow (of_int 2 0) (Int.neg exp)) ~min_prec:prec ()
+  end

@@ -114,8 +114,6 @@ let powi10 exp = powi ten exp
 
 let mul_exp10 x exp = if exp = 0 then x else mul x (powi10 exp)
 
-let of_float_exp d exp = mul_exp10 (of_float d) exp
-
 let to_float d = d.hi
 
 let decode x = (x.hi, x.lo)
@@ -135,3 +133,44 @@ let floor x =
 let ceil x =
   let r = Float.ceil x.hi in
   if r = x.hi then quicksum r (Float.floor x.lo) else create r 0.0
+
+let maxprecise = 9007199254740991
+let minprecise = Int.neg maxprecise
+
+let is_precise i =
+  let a = Int.compare i minprecise in
+  let b = Int.compare i maxprecise in
+  a >= 0 && b <= 0
+
+let small_exp i exp =
+  let d = of_float (Int.to_float i) in
+  if exp = 0 then d else mul_exp10 d exp
+
+let of_int i exp =
+  if is_precise i then
+    small_exp i exp
+  else begin
+    let p = Z.of_int i|> Utils.Z.count_digits in
+    let px = p - 14 in
+    let (hi, y) = Utils.Z.cdiv_mod_exp10 (Z.of_int i) px in
+    let py = px - 14 in
+    if py <= 0 then
+      small_exp (Z.to_int hi) (px + exp)
+    else begin
+      let (mid, z) = Utils.Z.cdiv_mod_exp10 y py in
+      let pz = py - 14 in
+      let (lo, plo) = if pz <= 0 then (z, 0) else (Utils.Z.cdiv_exp10 z pz, pz) in
+
+      let (<+>) = add in
+      small_exp (Z.to_int hi) (px + exp) <+> small_exp (Z.to_int mid) (py + exp) <+> small_exp (Z.to_int lo) (plo + exp)
+    end
+  end
+
+let to_decimal x ?prec:(prec=(-1)) () =
+  if not (is_finite x) then Decimal.zero else begin
+    let (<+>) = Decimal.add in
+    Decimal.of_float x.hi ~prec:prec () <+> Decimal.of_float x.lo ~prec:prec ()
+  end
+
+let to_string x ?prec:(prec=(-31)) () =
+  if not (is_finite x) then Float.to_string x.hi else Decimal.to_string (to_decimal x ()) ~prec:prec ()

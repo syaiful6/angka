@@ -19,7 +19,7 @@ val nan : t
 val of_float : float -> t
 (** Convert the given floating point number to ddouble *)
 
-val of_float_exp : float -> int -> t
+val of_int : int -> int -> t
 (** Craete a ddouble x such that x equal i*10e *)
 
 val neg : t -> t
@@ -50,3 +50,5 @@ val floor : t -> t
 
 val ceil : t -> t
 (** Ceil a ddouble *)
+
+val to_string : t -> ?prec:int -> unit -> string
