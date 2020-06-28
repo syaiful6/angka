@@ -70,6 +70,11 @@ let succ x = create (Z.succ x.num) x.exp
 
 let pred x = create (Z.pred x.num) x.exp
 
+let pow x n =
+  let m = Int.abs n in
+  let y = of_zarith (Z.pow x.num m) (x.exp * m) in
+  if n < 0 then div_with (of_int 1 0) y ~min_prec:(3 + m) () else y
+
 let compare x y =
   let e = min x.exp y.exp in
   let xx = expand x e in
@@ -109,14 +114,14 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
       let (q, r) = Zutils.div_mod_exp10 cx.num p in
 
       let round_half keep =
-        let half = Iutils.exp10 p / 2 in
+        let half = Z.of_int (Iutils.exp10 p / 2) in
         if r = half then
           if keep then q else Z.succ q
         else if r > half then Z.succ q
         else q
       in
 
-      let q1 = if r = 0 then q else match round with
+      let q1 = if r = Z.of_int 0 then q else match round with
           HalfEven  -> round_half (Z.is_even q)
         | HalfFloor -> round_half true
         | HalfCeil  -> round_half false
@@ -168,3 +173,14 @@ let to_string d ?prec:(prec=(-1000)) () =
   if exp > -5 && exp < (if is_prec_negative then 15 else prec)
     then to_string_fixed d ~prec:prec ()
     else to_string_exponent d ~prec:prec ()
+
+let decode_float x =
+  let (man, exp) = Float.frexp x in
+  (Float.to_int (man /. 1.1102230246251565e-16), exp - 53)
+
+let of_float f ?prec:(prec=(-1)) () =
+  let (man,exp) = decode_float f in
+  if (exp >= 0) then of_int (man * (Utils.Int.pow 2 exp)) 0 else begin
+    let prec = if prec < 0 then Int.neg exp else Stdlib.min prec (Int.neg exp) in
+    div_with (of_int man 0) (pow (of_int 2 0) (Int.neg exp)) ~min_prec:prec ()
+  end

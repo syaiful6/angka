@@ -11,6 +11,8 @@ val of_zarith : Z.t -> int -> t
 
 val of_int : int -> int -> t
 
+val of_float : float -> ?prec:int -> unit -> t
+
 val neg : t -> t
 
 val add : t -> t -> t

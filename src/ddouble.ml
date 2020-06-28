@@ -157,17 +157,20 @@ let of_int i exp =
     if py <= 0 then
       small_exp (Z.to_int hi) (px + exp)
     else begin
-      let (mid, z) = Utils.Z.cdiv_mod_exp10 (Z.of_int y) py in
+      let (mid, z) = Utils.Z.cdiv_mod_exp10 y py in
       let pz = py - 14 in
-      let (lo, plo) = if pz <= 0 then (z, 0) else (Utils.Z.cdiv_exp10 (Z.of_int z) pz |> Z.to_int, pz) in
+      let (lo, plo) = if pz <= 0 then (z, 0) else (Utils.Z.cdiv_exp10 z pz, pz) in
 
       let (<+>) = add in
-      small_exp (Z.to_int hi) (px + exp) <+> small_exp (Z.to_int mid) (py + exp) <+> small_exp lo (plo + exp)
+      small_exp (Z.to_int hi) (px + exp) <+> small_exp (Z.to_int mid) (py + exp) <+> small_exp (Z.to_int lo) (plo + exp)
     end
   end
 
-(* let to_decimal x ?prec:(prec=(-1)) () =
+let to_decimal x ?prec:(prec=(-1)) () =
   if not (is_finite x) then Decimal.zero else begin
     let (<+>) = Decimal.add in
+    Decimal.of_float x.hi ~prec:prec () <+> Decimal.of_float x.lo ~prec:prec ()
+  end
 
-  end *)
+let to_string x ?prec:(prec=(-31)) () =
+  if not (is_finite x) then Float.to_string x.hi else Decimal.to_string (to_decimal x ()) ~prec:prec ()

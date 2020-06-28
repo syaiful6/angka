@@ -19,12 +19,19 @@ let test_decimal_substract_operation _ =
   let d = Decimal.sub (Decimal.of_int 3 (-1)) (Decimal.of_int 1 (-1)) in
   assert_equal (Decimal.to_string_fixed d ()) "0.2"
 
+let test_create_decimal_from_float _ =
+  let d = Decimal.of_float 1.1 () in
+  let () = assert_equal (Decimal.to_string d ()) "1.100000000000000088817841970012523233890533447265625" in
+  let dd = Decimal.of_float 1.1 ~prec:17 () in
+  assert_equal (Decimal.to_string dd ()) "1.10000000000000008"
+
 let suite =
   "DecimalTest" >::: [
       "test_decimal_to_string_fixed" >:: test_decimal_to_string_fixed
     ; "test_decimal_to_string_exponent" >:: test_decimal_to_string_exponent
     ; "test_decimal_addition_operation" >:: test_decimal_addition_operation
     ; "test_decimal_substract_operation" >:: test_decimal_substract_operation
+    ; "test_create_decimal_from_float" >:: test_create_decimal_from_float
   ]
 
 let () = run_test_tt_main suite

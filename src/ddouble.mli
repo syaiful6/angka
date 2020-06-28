@@ -50,3 +50,5 @@ val floor : t -> t
 
 val ceil : t -> t
 (** Ceil a ddouble *)
+
+val to_string : t -> ?prec:int -> unit -> string
