@@ -38,6 +38,10 @@ val div : t -> t -> t
 (** Division *)
 
 val decode : t -> float * float
+(** Decode a ddouble `d` into two floats, `(hi,lo)` such that `d` equals  `hi`+`lo`. *)
+
+val encode : float -> float -> t
+(**  Encode a ddouble `d` from two floats `(hi,lo)` such that `d` equals  `hi`+`lo`. *)
 
 val to_float : t -> float
 (** Convert ddouble to float, losing the precision *)
@@ -52,3 +56,4 @@ val ceil : t -> t
 (** Ceil a ddouble *)
 
 val to_string : t -> ?prec:int -> unit -> string
+(**  Show a `:ddouble` `x` with a given precision `prec` (=`-31`) *)

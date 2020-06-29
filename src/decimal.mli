@@ -52,6 +52,10 @@ val max : t -> t -> t
 
 val abs : t -> t
 
+val is_even : t -> bool
+
+val is_odd : t -> bool
+
 type round =
     HalfEven
   | HalfCeil

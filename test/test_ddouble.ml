@@ -1,11 +1,11 @@
 open OUnit2
 open Angka
 
-let test_ddouble_of_float _ =
-  assert_equal 0.1 (Ddouble.of_float 0.1 |> Ddouble.decode |> fst)
+let ($) f a = f a
 
-let test_ddouble_of_float2 _ =
-  assert_equal 0.1 (Ddouble.of_float 0.1 |> Ddouble.decode |> fst)
+let test_ddouble_show _ =
+  let () = assert_equal (Ddouble.to_string $ Ddouble.of_float 0.1 $ ()) "0.1000000000000000055511151231258" in
+  assert_equal (Ddouble.to_string $ Ddouble.div Ddouble.one Ddouble.ten $ ())  "0.1"
 
 let test_ddouble_addition _ =
   let a = Ddouble.of_int 1 (-1) in
@@ -15,8 +15,7 @@ let test_ddouble_addition _ =
 
 let suite =
   "DDoubleTest" >::: [
-      "test_ddouble_of_float" >:: test_ddouble_of_float
-    ; "test_ddouble_of_float2" >:: test_ddouble_of_float2
+      "test_ddouble_show" >:: test_ddouble_show
     ; "test_ddouble_addition" >:: test_ddouble_addition
   ] 
 

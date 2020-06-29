@@ -32,6 +32,12 @@ module Z = struct
   
   let count_digits x =
     Z.to_string x |> String.length
+
+  let div x y =
+    let (q, r) = Z.div_rem x y in
+    if Z.sign r < 0 then
+      if Z.sign q > 0 then Z.pred q else Z.succ q
+    else q
 end
 
 module Int = struct

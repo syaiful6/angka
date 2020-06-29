@@ -118,6 +118,8 @@ let to_float d = d.hi
 
 let decode x = (x.hi, x.lo)
 
+let encode hi lo = add (of_float hi) (of_float lo)
+
 let round x =
   let r = Float.round x.hi in
   let diff = r -. x.hi in
@@ -174,3 +176,4 @@ let to_decimal x ?prec:(prec=(-1)) () =
 
 let to_string x ?prec:(prec=(-31)) () =
   if not (is_finite x) then Float.to_string x.hi else Decimal.to_string (to_decimal x ()) ~prec:prec ()
+  

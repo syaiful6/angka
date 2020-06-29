@@ -94,6 +94,10 @@ let max a b = if compare a b >= 0 then a else b
 
 let abs a = if sign a = -1 then neg a else a
 
+let is_even x = Z.is_even x.num
+
+let is_odd x = Z.is_odd x.num
+
 type round =
     HalfEven
   | HalfCeil
