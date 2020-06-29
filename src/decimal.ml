@@ -21,7 +21,7 @@ let sign x = Z.sign x.num
 let round_exp exp =
   if exp = 0 then exp else 7 * (Iutils.int_div exp 7)
 
-let of_zarith i exp =
+let of_zarith i ?exp:(exp=0) () =
   let x = round_exp exp in
   let diff = exp - x in
   if diff = 0 then create i exp else create (Zutils.mul_exp10 i diff) x
@@ -33,24 +33,24 @@ let reduce x =
   if p <= 0 then x else begin
     let exp = x.exp + p in
     let rexp = round_exp exp in
-    if rexp = x.exp then x else of_zarith (Zutils.cdiv_exp10 x.num p) exp
+    if rexp = x.exp then x else of_zarith (Zutils.cdiv_exp10 x.num p) ~exp:exp ()
   end
 
 let expand x e =
-  if x.exp <= e then x else of_zarith (Zutils.mul_exp10 x.num (x.exp - e)) e
+  if x.exp <= e then x else of_zarith (Zutils.mul_exp10 x.num (x.exp - e)) ~exp:e ()
 
 let add x y =
   let e = min x.exp y.exp in
   let xx = expand x e in
   let yy = expand y e in
-  of_zarith (Z.add xx.num yy.num) e
+  of_zarith (Z.add xx.num yy.num) ~exp:e ()
 
 let neg x = create (Z.neg x.num) x.exp
 
 let sub x y = add x (neg y)
 
 let mul x y =
-  let z = of_zarith (Z.mul x.num y.num) (x.exp + y.exp) in
+  let z = of_zarith (Z.mul x.num y.num) ~exp:(x.exp + y.exp) () in
   if z.exp < 0 then reduce z else z
 
 let div_with x y ?min_prec:(min_prec=15) () =
@@ -60,8 +60,8 @@ let div_with x y ?min_prec:(min_prec=15) () =
     let ydigits = Zutils.count_digits y.num in
     let extra = max 0 (ydigits - xdigits) + min_prec in
 
-    if extra > 0 then reduce (of_zarith (Z.div (Zutils.mul_exp10 x.num extra) y.num) (exp - extra))
-    else reduce (of_zarith (Z.div x.num y.num) (exp - extra))
+    if extra > 0 then reduce (of_zarith (Z.div (Zutils.mul_exp10 x.num extra) y.num) ~exp:(exp - extra) ())
+    else reduce (of_zarith (Z.div x.num y.num) ~exp:(exp - extra) ())
   end
 
 let div x y = div_with x y ()
@@ -72,8 +72,8 @@ let pred x = create (Z.pred x.num) x.exp
 
 let pow x n =
   let m = Int.abs n in
-  let y = of_zarith (Z.pow x.num m) (x.exp * m) in
-  if n < 0 then div_with (of_int 1 0) y ~min_prec:(3 + m) () else y
+  let y = of_zarith (Z.pow x.num m) ~exp:(x.exp * m) () in
+  if n < 0 then div_with (of_int 1 ()) y ~min_prec:(3 + m) () else y
 
 let compare x y =
   let e = min x.exp y.exp in
@@ -133,7 +133,7 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
         | AwayFromZero -> if Z.sign q < 0 then q else Z.succ q
       in
 
-      of_zarith q1 (Int.neg prec)
+      of_zarith q1 ~exp:(Int.neg prec) ()
     end
   end
 
@@ -180,7 +180,7 @@ let decode_float x =
 
 let of_float f ?prec:(prec=(-1)) () =
   let (man,exp) = decode_float f in
-  if (exp >= 0) then of_int (man * (Utils.Int.pow 2 exp)) 0 else begin
+  if (exp >= 0) then of_int (man * (Utils.Int.pow 2 exp)) () else begin
     let prec = if prec < 0 then Int.neg exp else Stdlib.min prec (Int.neg exp) in
-    div_with (of_int man 0) (pow (of_int 2 0) (Int.neg exp)) ~min_prec:prec ()
+    div_with (of_int man ()) (pow (of_int 2 ()) (Int.neg exp)) ~min_prec:prec ()
   end

@@ -6,10 +6,10 @@ val zero : t
 
 val is_zero : t -> bool
 
-val of_zarith : Z.t -> int -> t
+val of_zarith : Z.t -> ?exp:int -> unit -> t
 (** Create a decimal with the given integer and exponent *)
 
-val of_int : int -> int -> t
+val of_int : int -> ?exp:int -> unit -> t
 
 val of_float : float -> ?prec:int -> unit -> t
 
