@@ -9,6 +9,8 @@ module Z = struct
   let cdiv_exp10 i n =
     Z.div i (Z.pow ten n)
 
+  let exp10 = mul_exp10 (Z.of_int 1)
+
   let cdiv_mod_exp10 i n =
     if n <= 0 then (i, Z.of_int 0) else begin
       let cq = cdiv_exp10 i n in
@@ -18,7 +20,7 @@ module Z = struct
 
   let div_mod_exp10 i n =
     let (cq, cr) = cdiv_mod_exp10 i n in
-    if cr > Z.of_int 0 then (cq, cr) else (Z.pred cq, Z.pred cr)
+    if cr > Z.of_int 0 then (cq, cr) else (Z.pred cq, Z.add cr (exp10 n))
 
   let rec is_exp10_rec a j =
     if is_zero a then j
