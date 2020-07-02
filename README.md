@@ -1,4 +1,12 @@
-## DDouble
+# Angka
+This library provides two numeric type: Decimal and Dddouble.
+
+### Decimal
+
+Operation on arbitrary precision decimal number. This module provides
+exact decimal arithmetic and are well suited for financial calculations.
+
+### DDouble
 
 Operations on double double 128-bit floating point numbers.
 

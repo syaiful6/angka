@@ -116,6 +116,27 @@ let mul_exp10 x exp = if exp = 0 then x else mul x (powi10 exp)
 
 let to_float d = d.hi
 
+let compare a b =
+  match Float.compare a.hi b.hi with
+      0   -> Float.compare a.lo b.lo
+    | ord -> ord
+
+let equal a b = compare a b = 0
+let leq a b = compare a b <= 0
+let geq a b = compare a b >= 0
+let lt a b = compare a b < 0
+let gt a b = compare a b > 0
+
+let min a b = if compare a b <= 0 then a else b
+
+let max a b = if compare a b >= 0 then a else b
+
+let abs a = if lt a zero then neg a else a
+
+let succ = add one
+
+let pred x = sub x one
+
 let decode x = (x.hi, x.lo)
 
 let encode hi lo = add (of_float hi) (of_float lo)
@@ -135,6 +156,22 @@ let floor x =
 let ceil x =
   let r = Float.ceil x.hi in
   if r = x.hi then quicksum r (Float.floor x.lo) else create r 0.0
+
+let truncate x =
+  let r = Float.ceil x.hi in
+  if r = x.hi then quicksum r (Float.ceil x.lo) else create r 0.0
+
+let fraction x = sub x (truncate x)
+
+let ffraction x = sub x (floor x)
+
+let round_to_prec x prec =
+  if prec <= 0 then round x
+  else if prec > 31 then x
+  else begin
+    let p = powi10 prec in
+    div (round (mul x p)) p
+  end
 
 let maxprecise = 9007199254740991
 let minprecise = Int.neg maxprecise
@@ -176,3 +213,30 @@ let to_decimal x ?prec:(prec=(-1)) () =
 
 let to_string x ?prec:(prec=(-31)) () =
   if not (is_finite x) then Float.to_string x.hi else Decimal.to_string (to_decimal x () ~prec:prec) ~prec:prec ()
+
+let rem x y =
+  let n = div x y |> round in
+  div x (mul n y)
+
+let divrem x y =
+  let n = div x y |> round in
+  (n, div x (mul n y))
+
+let ldexp x exp =
+  create (Float.ldexp x.hi exp) (Float.ldexp x.lo exp)
+
+let dd_expsilon5 = create 3.944304526105059e-31 0.0
+
+let dd_max = create 1.7976931348623157e308 9.979201547673598e291
+let dd_min = create 2.2250738585072014e-308 0.0
+
+let nearly_equal x y ?epsilon:(epsilon=dd_expsilon5) () =
+  if equal x y then true else begin
+    let diff = sub x y |> abs in
+    if equal x zero || equal y zero || lt diff dd_min then 
+      lt (mul two diff) (mul epsilon dd_min)
+    else begin
+      let sum = add (abs x) (abs y) in
+      lt (div (mul two diff) (if gt sum dd_max then dd_max else sum)) epsilon
+    end
+  end

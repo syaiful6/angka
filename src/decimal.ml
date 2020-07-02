@@ -118,11 +118,12 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
       let (q, r) = Zutils.div_mod_exp10 cx.num p in
 
       let round_half keep =
-        let half = Z.of_int (Iutils.exp10 p / 2) in
-        if r = half then
-          if keep then q else Z.succ q
-        else if r > half then Z.succ q
-        else q
+        let half = Zutils.div (Zutils.exp10 p) (Z.of_int 2) in
+        match Z.compare r half with
+          | 0 when keep -> q
+          | 0 -> Z.succ q
+          | 1 -> Z.succ q
+          | _ -> q
       in
 
       let q1 = if r = Z.of_int 0 then q else match round with
@@ -136,6 +137,7 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
         | Truncate -> if Z.sign q > 0 then q else Z.succ q
         | AwayFromZero -> if Z.sign q < 0 then q else Z.succ q
       in
+
 
       of_zarith q1 ~exp:(Int.neg prec) ()
     end

@@ -34,8 +34,42 @@ val sub : t -> t -> t
 val mul : t -> t -> t
 (** Multiplication. *)
 
+val sqr : t -> t
+(** Multiply `x` with itself *)
+
 val div : t -> t -> t
 (** Division *)
+
+val rem : t -> t -> t
+
+val divrem : t -> t -> t * t
+
+val compare : t -> t -> int
+(** Comparison. compare x y returns 0 if x equals y, -1 if x is smaller than y,
+  and 1 if x is greater than y *)
+
+val equal : t -> t -> bool
+
+val nearly_equal : t -> t -> ?epsilon:t -> unit -> bool
+(** Return if two `ddouble`s are nearly equal with respect to some `epsilon` *)
+
+val leq : t -> t -> bool
+
+val geq : t -> t -> bool
+
+val lt : t -> t -> bool
+
+val gt : t -> t -> bool
+
+val min : t -> t -> t
+
+val max : t -> t -> t
+
+val abs : t -> t
+
+val succ : t -> t
+
+val pred : t -> t
 
 val decode : t -> float * float
 (** Decode a ddouble `d` into two floats, `(hi,lo)` such that `d` equals  `hi`+`lo`. *)
@@ -54,6 +88,18 @@ val floor : t -> t
 
 val ceil : t -> t
 (** Ceil a ddouble *)
+
+val truncate : t -> t
+(** Round toward zero *)
+
+val fraction : t -> t
+
+val ffraction : t -> t
+
+val round_to_prec : t -> int -> t
+(** Round a `:ddouble` to a specified precision. *)
+
+val ldexp : t -> int -> t
 
 val to_string : t -> ?prec:int -> unit -> string
 (**  Show a `:ddouble` `x` with a given precision `prec` (=`-31`) *)
