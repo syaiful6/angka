@@ -76,3 +76,5 @@ val to_string : t -> ?prec:int -> unit -> string
 val to_string_fixed : t -> ?prec:int -> unit -> string
 
 val to_string_exponent : t -> ?prec:int -> unit -> string
+
+val parse_decimal : string -> t Option.t

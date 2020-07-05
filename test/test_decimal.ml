@@ -27,6 +27,14 @@ let test_create_decimal_from_float _ =
   let dd = Decimal.of_float 1.1 ~prec:17 () in
   assert_equal (Decimal.to_string dd ()) "1.10000000000000008"
 
+let test_parse_decimal _ =
+  let x = Option.value (Decimal.parse_decimal "0.221") ~default:Decimal.zero in
+  let () = assert_bool "the parsed decimal should not equal zero" (not (Decimal.equal x Decimal.zero)) in
+  let () = assert_bool "the parsed decimal should equal" (Decimal.equal x (Decimal.of_int 221 ~exp:(-3) ())) in
+
+  let y = Option.value (Decimal.parse_decimal "-0.2") ~default:Decimal.zero in
+  assert_bool "minus decimal successfully parsed" (Decimal.equal y (Decimal.of_int 2 ~exp:(-1) () |> Decimal.neg))
+
 let suite =
   "DecimalTest" >::: [
       "test_decimal_to_string_fixed" >:: test_decimal_to_string_fixed
@@ -34,6 +42,7 @@ let suite =
     ; "test_decimal_addition_operation" >:: test_decimal_addition_operation
     ; "test_decimal_substract_operation" >:: test_decimal_substract_operation
     ; "test_create_decimal_from_float" >:: test_create_decimal_from_float
+    ; "test_parse_decimal" >:: test_parse_decimal
   ]
 
 let () = run_test_tt_main suite

@@ -1,5 +1,5 @@
 {
-  "checksum": "1407e6fb585505b46a06d6061026a857",
+  "checksum": "4fb532c1855dd71ace20d42106187044",
   "root": "angka@link-dev:./package.json",
   "node": {
     "ocaml@4.10.0@d41d8cd9": {
@@ -16,9 +16,9 @@
       "dependencies": [],
       "devDependencies": []
     },
-    "esy-gmp@archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe@186b9388": {
+    "esy-gmp@archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe@4564334f": {
       "id":
-        "esy-gmp@archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe@186b9388",
+        "esy-gmp@archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe@4564334f",
       "name": "esy-gmp",
       "version":
         "archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe",
@@ -28,7 +28,7 @@
           "archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe"
         ]
       },
-      "overrides": [ "esy.lock/overrides/186b93889ee6682b3910ff6984313567" ],
+      "overrides": [ "esy.lock/overrides/4564334f17398d144534f5a4c8c9a878" ],
       "dependencies": [],
       "devDependencies": []
     },
@@ -43,7 +43,8 @@
       },
       "overrides": [],
       "dependencies": [
-        "@opam/zarith@opam:1.9.1@ce833113", "@opam/dune@opam:2.5.0@aef1678b"
+        "@opam/zarith@opam:1.9.1@ce833113", "@opam/re@opam:1.9.0@d4d5e13d",
+        "@opam/dune@opam:2.5.0@aef1678b"
       ],
       "devDependencies": [
         "ocaml@4.10.0@d41d8cd9", "@opam/merlin@opam:3.3.6@7ca67060"
@@ -73,11 +74,11 @@
       ],
       "dependencies": [
         "ocaml@4.10.0@d41d8cd9", "@opam/ocamlfind@opam:1.8.1@ff07b0f9",
-        "@opam/conf-perl@opam:1@a6896ba6", "@opam/conf-gmp@opam:1@bd7f3a85",
+        "@opam/conf-perl@opam:1@402f7201", "@opam/conf-gmp@opam:1@f2ac204e",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": [
-        "ocaml@4.10.0@d41d8cd9", "@opam/conf-gmp@opam:1@bd7f3a85"
+        "ocaml@4.10.0@d41d8cd9", "@opam/conf-gmp@opam:1@f2ac204e"
       ]
     },
     "@opam/yojson@opam:1.7.0@7056d985": {
@@ -106,6 +107,51 @@
       "devDependencies": [
         "ocaml@4.10.0@d41d8cd9", "@opam/easy-format@opam:1.3.2@0484b3c4",
         "@opam/dune@opam:2.5.0@aef1678b", "@opam/biniou@opam:1.2.1@d7570399"
+      ]
+    },
+    "@opam/seq@opam:base@d8d7de1d": {
+      "id": "@opam/seq@opam:base@d8d7de1d",
+      "name": "@opam/seq",
+      "version": "opam:base",
+      "source": {
+        "type": "install",
+        "source": [ "no-source:" ],
+        "opam": {
+          "name": "seq",
+          "version": "base",
+          "path": "esy.lock/opam/seq.base"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.10.0@d41d8cd9", "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [ "ocaml@4.10.0@d41d8cd9" ]
+    },
+    "@opam/re@opam:1.9.0@d4d5e13d": {
+      "id": "@opam/re@opam:1.9.0@d4d5e13d",
+      "name": "@opam/re",
+      "version": "opam:1.9.0",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://opam.ocaml.org/cache/md5/bd/bddaed4f386a22cace7850c9c7dac296#md5:bddaed4f386a22cace7850c9c7dac296",
+          "archive:https://github.com/ocaml/ocaml-re/releases/download/1.9.0/re-1.9.0.tbz#md5:bddaed4f386a22cace7850c9c7dac296"
+        ],
+        "opam": {
+          "name": "re",
+          "version": "1.9.0",
+          "path": "esy.lock/opam/re.1.9.0"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.10.0@d41d8cd9", "@opam/seq@opam:base@d8d7de1d",
+        "@opam/dune@opam:2.5.0@aef1678b", "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [
+        "ocaml@4.10.0@d41d8cd9", "@opam/seq@opam:base@d8d7de1d",
+        "@opam/dune@opam:2.5.0@aef1678b"
       ]
     },
     "@opam/ocamlfind@opam:1.8.1@ff07b0f9": {
@@ -244,8 +290,8 @@
         "@opam/base-unix@opam:base@87d0b2eb"
       ]
     },
-    "@opam/conf-perl@opam:1@a6896ba6": {
-      "id": "@opam/conf-perl@opam:1@a6896ba6",
+    "@opam/conf-perl@opam:1@402f7201": {
+      "id": "@opam/conf-perl@opam:1@402f7201",
       "name": "@opam/conf-perl",
       "version": "opam:1",
       "source": {
@@ -278,8 +324,8 @@
       "dependencies": [ "@esy-ocaml/substs@0.0.1@d41d8cd9" ],
       "devDependencies": []
     },
-    "@opam/conf-gmp@opam:1@bd7f3a85": {
-      "id": "@opam/conf-gmp@opam:1@bd7f3a85",
+    "@opam/conf-gmp@opam:1@f2ac204e": {
+      "id": "@opam/conf-gmp@opam:1@f2ac204e",
       "name": "@opam/conf-gmp",
       "version": "opam:1",
       "source": {
@@ -298,7 +344,7 @@
         }
       ],
       "dependencies": [
-        "esy-gmp@archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe@186b9388",
+        "esy-gmp@archive:https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz#sha1:9dc6981197a7d92f339192eea974f5eca48fcffe@4564334f",
         "@esy-ocaml/substs@0.0.1@d41d8cd9"
       ],
       "devDependencies": []

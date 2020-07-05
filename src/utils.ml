@@ -40,6 +40,15 @@ module Z = struct
     if Z.sign r < 0 then
       if Z.sign q > 0 then Z.pred q else Z.succ q
     else q
+
+  let parse_int s =
+    try
+      Z.of_string s |> Option.some
+    with Invalid_argument _ -> Option.none
+
+  let parse_int_default s ?default:(default=Z.zero) () =
+    Option.value (parse_int s) ~default:default
+
 end
 
 module Int = struct

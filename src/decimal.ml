@@ -190,3 +190,22 @@ let of_float f ?prec:(prec=(-1)) () =
     let prec = if prec < 0 then Int.neg exp else Stdlib.min prec (Int.neg exp) in
     div_with (of_int man ()) (pow (of_int 2 ()) (Int.neg exp)) ~min_prec:prec ()
   end
+
+let rx_decimal = Re.Pcre.regexp "^([\\-\\+]?)(\\d+)(?:\\.(\\d*))?(?:[eE]([\\-\\+]?\\d+))?$"
+
+let rx_group groups x =
+  try
+    Re.Group.get groups x |> Option.some
+  with Not_found -> Option.none
+
+let parse_decimal s =
+  let groups = Re.Pcre.exec ~rex:rx_decimal ~pos:0 (String.trim s) in
+  try
+    let sign = Re.Group.get groups 1 in
+    let whole = Re.Group.get groups 2 in
+    let frac = Re.Group.get groups 3 in
+    let frac2 = Option.value (rx_group groups 4) ~default:"" in
+    let exp = (Int.neg (String.length frac)) + Option.value (int_of_string_opt frac2) ~default:0 in
+    let f = of_zarith (Zutils.parse_int_default (whole ^ frac) ()) ~exp:exp () in
+    if sign = "-" then Option.some (neg f) else Option.some f
+  with Not_found -> Option.none
