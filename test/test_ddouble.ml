@@ -42,6 +42,13 @@ let test_ddouble_division _ =
   (* let () = Printf.printf "results: %s" (Ddouble.to_string c ()) in *)
   assert_equal (Ddouble.to_string c ()) "3.3333333333333333333333333333333"
 
+let test_ddouble_min_max _ =
+  let a = Ddouble.of_int 3 (-1) in
+  let b = Ddouble.of_int 2 (-1) in
+  let () = assert_bool "min function returns min value" (Ddouble.equal b (Ddouble.min a b)) in
+
+  assert_bool "max function returns max value" (Ddouble.equal a (Ddouble.max a b))
+
 let suite =
   "DDoubleTest" >::: [
       "test_ddouble_show" >:: test_ddouble_show
@@ -49,6 +56,7 @@ let suite =
     ; "test_ddouble_substraction" >:: test_ddouble_substraction
     ; "test_ddouble_multiplication" >:: test_ddouble_multiplication
     ; "test_ddouble_division" >:: test_ddouble_division
+    ; "test_ddouble_min_max" >:: test_ddouble_min_max
   ] 
 
 let () = run_test_tt_main suite

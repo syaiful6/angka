@@ -22,6 +22,15 @@ val of_float : float -> t
 val of_int : int -> int -> t
 (** Craete a ddouble x such that x equal i*10e *)
 
+val abs : t -> t
+(** Absoulte value *)
+
+val succ : t -> t
+(** Returns its argument plus one *)
+
+val pred : t -> t
+(** Return its argument minus one *)
+
 val neg : t -> t
 (** Unary negation *)
 
@@ -41,35 +50,38 @@ val div : t -> t -> t
 (** Division *)
 
 val rem : t -> t -> t
+(** ddouble remainder *)
 
-val divrem : t -> t -> t * t
+val div_rem : t -> t -> t * t
+(** Compute both the ddouble quotien and ramainder *)
 
 val compare : t -> t -> int
 (** Comparison. compare x y returns 0 if x equals y, -1 if x is smaller than y,
   and 1 if x is greater than y *)
 
 val equal : t -> t -> bool
+(** Equality test. *)
 
 val nearly_equal : t -> t -> ?epsilon:t -> unit -> bool
 (** Return if two `ddouble`s are nearly equal with respect to some `epsilon` *)
 
 val leq : t -> t -> bool
+(** Less than or equal *)
 
 val geq : t -> t -> bool
+(** Greater than or equal *)
 
 val lt : t -> t -> bool
+(** Less than (and not equal) *)
 
 val gt : t -> t -> bool
+(** Greater than (and not equal) *)
 
 val min : t -> t -> t
+(** Returns the minimum of its arguments. *)
 
 val max : t -> t -> t
-
-val abs : t -> t
-
-val succ : t -> t
-
-val pred : t -> t
+(** Returns the maximum of its arguments *)
 
 val decode : t -> float * float
 (** Decode a ddouble `d` into two floats, `(hi,lo)` such that `d` equals  `hi`+`lo`. *)

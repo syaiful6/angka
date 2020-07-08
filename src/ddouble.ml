@@ -218,7 +218,7 @@ let rem x y =
   let n = div x y |> round in
   div x (mul n y)
 
-let divrem x y =
+let div_rem x y =
   let n = div x y |> round in
   (n, div x (mul n y))
 
