@@ -49,6 +49,34 @@ let test_ddouble_min_max _ =
 
   assert_bool "max function returns max value" (Ddouble.equal a (Ddouble.max a b))
 
+let test_parse_ddouble _ =
+  let x = Option.value (Ddouble.parse_ddouble "0.221") ~default:Ddouble.zero in
+  let () = Printf.printf "results: %s\\n" (Ddouble.to_string x ()) in
+  let () = assert_bool "the parsed ddouble should not equal zero" (not (Ddouble.equal x Ddouble.zero)) in
+  let () = assert_bool "the parsed ddouble should equal" (Ddouble.equal x (Ddouble.of_int 221 (-3))) in
+
+  let y = Option.value (Ddouble.parse_ddouble "-0.2") ~default:Ddouble.zero in
+  let () = Printf.printf "results: %s\\n" (Ddouble.to_string y ()) in
+  assert_bool "minus ddouble successfully parsed" (Ddouble.equal y (Ddouble.of_int 2 (-1) |> Ddouble.neg))
+
+let test_ddouble_ordering _ =
+  let a = Ddouble.of_int 2 (-1) in
+  let b = Ddouble.of_int 3 (-1) in
+  
+  let () = assert_bool "leq return true if a < b" (Ddouble.leq a b) in
+  let () = assert_bool "leq return true if a = b" (Ddouble.leq a a) in
+  let () = assert_bool "leq return false if a > b" (Ddouble.leq b a = false) in
+
+  let () = assert_bool "geq return true if b > a" (Ddouble.geq b a) in
+  let () = assert_bool "geq return true if b = a" (Ddouble.geq b b) in
+  let () = assert_bool "geq return false if b < a" (Ddouble.geq a b = false) in
+
+  let () = assert_bool "lt return true if a < b" (Ddouble.lt a b) in
+  let () = assert_bool "lt return false if a > b" (Ddouble.lt b a = false) in
+
+  let () = assert_bool "gt return true if b > a" (Ddouble.gt b a) in
+  assert_bool "gt return true if b < a" (Ddouble.gt a b = false)
+
 let suite =
   "DDoubleTest" >::: [
       "test_ddouble_show" >:: test_ddouble_show
@@ -57,6 +85,8 @@ let suite =
     ; "test_ddouble_multiplication" >:: test_ddouble_multiplication
     ; "test_ddouble_division" >:: test_ddouble_division
     ; "test_ddouble_min_max" >:: test_ddouble_min_max
+    ; "test_ddouble_ordering" >:: test_ddouble_ordering
+    ; "test_parse_ddouble" >:: test_parse_ddouble
   ] 
 
 let () = run_test_tt_main suite

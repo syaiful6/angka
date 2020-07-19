@@ -115,3 +115,6 @@ val ldexp : t -> int -> t
 
 val to_string : t -> ?prec:int -> unit -> string
 (**  Show a `:ddouble` `x` with a given precision `prec` (=`-31`) *)
+
+val parse_ddouble : string -> t option
+(** Parse a :ddouble string to  *)

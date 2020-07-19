@@ -189,7 +189,7 @@ let of_int i exp =
   if is_precise i then
     small_exp i exp
   else begin
-    let p = Z.of_int i|> Utils.Z.count_digits in
+    let p = Z.of_int i |> Utils.Z.count_digits in
     let px = p - 14 in
     let (hi, y) = Utils.Z.cdiv_mod_exp10 (Z.of_int i) px in
     let py = px - 14 in
@@ -240,3 +240,21 @@ let nearly_equal x y ?epsilon:(epsilon=dd_expsilon5) () =
       lt (div (mul two diff) (if gt sum dd_max then dd_max else sum)) epsilon
     end
   end
+
+let rx_ddouble = Re.Pcre.regexp "^([\\-\\+]?\\d+)(?:\\.(\\d*))?(?:[eE]([\\-\\+]?\\d+))?$"
+
+let rx_group groups x =
+  try
+    Re.Group.get groups x |> Option.some
+  with Not_found -> Option.none
+
+let parse_ddouble s =
+  let groups = Re.Pcre.exec ~rex:rx_ddouble ~pos:0 (String.trim s) in
+  try
+    let whole = Re.Group.get groups 1 in
+    let frac = Re.Group.get groups 2 in
+    let exp = Option.value (Option.bind (rx_group groups 3) int_of_string_opt) ~default:0 in
+    let w = Option.value (int_of_string_opt (whole ^ frac)) ~default:0 in
+    let e = exp - String.length frac in
+    Option.some (of_int w e)
+  with Not_found -> Option.none
