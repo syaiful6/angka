@@ -109,7 +109,7 @@ type round =
   | Truncate
   | AwayFromZero
 
-let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
+let round_to_prec x ?prec:(prec=0) ?rnd:(rnd=HalfEven) () =
   if x.exp >= Int.neg prec then x
   else begin
     let cx = reduce x in
@@ -126,7 +126,7 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
           | _ -> q
       in
 
-      let q1 = if r = Z.of_int 0 then q else match round with
+      let q1 = if r = Z.of_int 0 then q else match rnd with
           HalfEven  -> round_half (Z.is_even q)
         | HalfFloor -> round_half true
         | HalfCeil  -> round_half false
@@ -142,6 +142,14 @@ let round_to_prec x ?prec:(prec=0) ?round:(round=HalfEven) () =
       of_zarith q1 ~exp:(Int.neg prec) ()
     end
   end
+
+let round x ?rnd:(rnd=HalfEven) () = round_to_prec x ~rnd:rnd ()
+
+let ceil x = round x ~rnd:Ceil ()
+
+let floor x = round x ~rnd:Floor ()
+
+let truncate x = round x ~rnd:Truncate ()
 
 let get_exponent d = Zutils.count_digits d.num + d.exp - 1
 

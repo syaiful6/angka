@@ -93,9 +93,21 @@ type round =
   | Truncate
   | AwayFromZero
 
-val round_to_prec : t -> ?prec:int -> ?round:round -> unit -> t
+val round_to_prec : t -> ?prec:int -> ?rnd:round -> unit -> t
 (** Round the decimal-point to number x to a specified number of digits
   behind the dot prec:0 with an optional rounding mode round:HalfEven *)
+
+val round : t -> ?rnd:round -> unit -> t
+(** Round a `:decimal` number to a whole number with an optional rounding mode (=`Half-even`). *)
+
+val ceil : t -> t
+(** Round a decimal x to the smallest integer that is not less than x *)
+
+val floor : t -> t
+(** Round a decimal x using the largest integer that is not larger than x*)
+
+val truncate : t -> t
+(** Round a decimal x to an integer by rounding towards zero *)
 
 val get_exponent : t -> int
 
